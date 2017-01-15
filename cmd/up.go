@@ -43,15 +43,15 @@ func runCmdUp(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	cluster := cluster.New(conf, upOpts.awsDebug)
+
+	if err := cluster.Validate(); err != nil {
+		return fmt.Errorf("Error validating cluster: %v", err)
+	}
+
 	data, err := conf.RenderStackTemplate(stackTemplateOptions, upOpts.prettyPrint)
 	if err != nil {
 		return fmt.Errorf("Failed to render stack template: %v", err)
-	}
-
-	cluster := cluster.New(conf, upOpts.awsDebug)
-
-	if err := cluster.Validate(string(data), upOpts.s3URI); err != nil {
-		return fmt.Errorf("Error validating cluster: %v", err)
 	}
 
 	if upOpts.export {

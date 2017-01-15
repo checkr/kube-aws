@@ -118,12 +118,16 @@ func (c *Cluster) validateExistingVPCState(ec2Svc ec2Service) error {
 		return fmt.Errorf("error describing subnets for vpc: %v", err)
 	}
 
-	subnetCIDRS := make([]string, len(subnetOutput.Subnets))
-	for i, existingSubnet := range subnetOutput.Subnets {
-		subnetCIDRS[i] = *existingSubnet.CidrBlock
+	existingSubnets := []config.Subnet{}
+	for _, existingSubnet := range subnetOutput.Subnets {
+		s := config.Subnet{}
+		s.AvailabilityZone = *existingSubnet.AvailabilityZone
+		s.InstanceCIDR = *existingSubnet.CidrBlock
+		s.SubnetId = *existingSubnet.SubnetId
+		existingSubnets = append(existingSubnets, s)
 	}
 
-	if err := c.ValidateExistingVPC(*existingVPC.CidrBlock, subnetCIDRS); err != nil {
+	if err := c.ValidateExistingVPC(*existingVPC.CidrBlock, existingSubnets); err != nil {
 		return fmt.Errorf("error validating existing VPC: %v", err)
 	}
 
@@ -151,7 +155,7 @@ func (c *Cluster) stackProvisioner() *cfnstack.Provisioner {
 	return cfnstack.NewProvisioner(c.StackName(), c.WorkerDeploymentSettings().StackTags(), stackPolicyBody, c.session)
 }
 
-func (c *Cluster) Validate(stackBody string, s3URI string) error {
+func (c *Cluster) Validate() error {
 	ec2Svc := ec2.New(c.session)
 	if err := c.validateKeyPair(ec2Svc); err != nil {
 		return err
@@ -178,7 +182,7 @@ func (c *Cluster) Create(stackBody string, s3URI string) error {
 		return err
 	}
 
-	if err := c.Validate(stackBody, s3URI); err != nil {
+	if err := c.Validate(); err != nil {
 		return err
 	}
 
@@ -257,7 +261,7 @@ func (c *Cluster) lockEtcdResources(cfSvc *cloudformation.CloudFormation, stackB
 }
 
 func (c *Cluster) Update(stackBody string, s3URI string) (string, error) {
-	if err := c.Validate(stackBody, s3URI); err != nil {
+	if err := c.Validate(); err != nil {
 		return "", err
 	}
 
