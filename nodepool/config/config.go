@@ -6,6 +6,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"path/filepath"
 
@@ -166,6 +167,9 @@ func ClusterFromBytes(data []byte, main *cfg.Config) (*ProvidedConfig, error) {
 		if spec.RootVolumeType == "io1" && spec.RootVolumeIOPS == 0 {
 			spec.RootVolumeIOPS = c.Worker.SpotFleet.UnitRootVolumeIOPS * spec.WeightedCapacity
 		}
+
+		spec.RootVolumeEncrypted = c.Worker.SpotFleet.RootVolumeEncrypted
+
 		launchSpecs = append(launchSpecs, spec)
 	}
 	c.Worker.SpotFleet.LaunchSpecifications = launchSpecs
