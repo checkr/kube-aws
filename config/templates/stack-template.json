@@ -504,9 +504,7 @@
     {{range $etcdIndex, $etcdInstance := .EtcdInstances}}
     "InstanceEtcd{{$etcdIndex}}eni": {
       "Properties": {
-          "SubnetId": {
-            "Ref": "Subnet{{$etcdInstance.SubnetIndex}}"
-          },
+          "SubnetId": {{ (index $.Subnets $etcdInstance.SubnetIndex).Ref}},
           "GroupSet": [
             {
               "Ref": "SecurityGroupEtcd"
