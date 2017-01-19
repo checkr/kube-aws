@@ -8,8 +8,6 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"path/filepath"
-
 	cfg "github.com/coreos/kube-aws/config"
 	"github.com/coreos/kube-aws/coreos/amiregistry"
 	"github.com/coreos/kube-aws/coreos/userdatavalidation"
