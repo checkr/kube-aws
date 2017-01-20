@@ -166,8 +166,6 @@ func ClusterFromBytes(data []byte, main *cfg.Config) (*ProvidedConfig, error) {
 			spec.RootVolumeIOPS = c.Worker.SpotFleet.UnitRootVolumeIOPS * spec.WeightedCapacity
 		}
 
-		spec.RootVolumeEncrypted = c.Worker.SpotFleet.RootVolumeEncrypted
-
 		launchSpecs = append(launchSpecs, spec)
 	}
 	c.Worker.SpotFleet.LaunchSpecifications = launchSpecs
