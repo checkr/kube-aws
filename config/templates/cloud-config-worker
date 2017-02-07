@@ -9,6 +9,16 @@ coreos:
     etcd_keyfile: /etc/kubernetes/ssl/etcd-client-key.pem
 
   units:
+    - name: telegraf.service
+      enable: true
+      command: start
+      content: |
+        [Unit]
+        Description=Start telegraf stats collection
+        After=network-online.target
+        [Service]
+        Restart=on-failure
+        ExecStart=/usr/bin/rkt run --set-env HOST_ETC=/etc2 --interactive --volume=etc,kind=host,source=/etc --volume=sys,kind=host,source=/sys --volume=proc,kind=host,source=/proc --mount volume=etc,target=/etc2 --mount volume=proc,target=/proc --mount volume=sys,target=/sys --hostname=%H --dns=host --net=host --insecure-options=image docker://checkr/telegraf-kapacitor:0e98cb45d3770baf0f8704babe9fce018ef30863.codeflow --exec /usr/bin/telegraf -- --config /etc/system.telegraf.conf
     - name: cfn-etcd-environment.service
       enable: true
       command: start
