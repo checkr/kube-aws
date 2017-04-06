@@ -418,7 +418,7 @@ write_files:
       {{- end}}
   {{- end }}
 {{- end }}
-{{if .Experimental.DisableSecurityGroupIngress}}
+{{if .Controller.DisableSecurityGroupIngress}}
   - path: /etc/kubernetes/additional-configs/cloud.config
     owner: root:root
     permissions: 0644
@@ -1298,10 +1298,10 @@ write_files:
           {{ end }}
           - --root-ca-file=/etc/kubernetes/ssl/ca.pem
           - --cloud-provider=aws
-          {{if .Experimental.NodeMonitorGracePeriod}}
-          - --node-monitor-grace-period={{ .Experimental.NodeMonitorGracePeriod }}
+          {{if .Controller.NodeMonitorGracePeriod}}
+          - --node-monitor-grace-period={{ .Controller.NodeMonitorGracePeriod }}
           {{end}}
-          {{if .Experimental.DisableSecurityGroupIngress}}
+          {{if .Controller.DisableSecurityGroupIngress}}
           - --cloud-config=/etc/kubernetes/additional-configs/cloud.config
           {{end}}
           resources:
@@ -1315,7 +1315,7 @@ write_files:
             initialDelaySeconds: 15
             timeoutSeconds: 15
           volumeMounts:
-          {{if .Experimental.DisableSecurityGroupIngress}}
+          {{if .Controller.DisableSecurityGroupIngress}}
           - mountPath: /etc/kubernetes/additional-configs
             name: additional-configs
             readOnly: true
@@ -1328,7 +1328,7 @@ write_files:
             readOnly: true
         hostNetwork: true
         volumes:
-        {{if .Experimental.DisableSecurityGroupIngress}}
+        {{if .Controller.DisableSecurityGroupIngress}}
         - hostPath:
             path: /etc/kubernetes/additional-configs
           name: additional-configs
